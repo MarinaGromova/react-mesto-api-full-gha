@@ -1,0 +1,9 @@
+.sign__link {
+  color: #fff;
+  margin: 15px auto 0;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 14px;
+  line-height: normal;
+  cursor: pointer;
+  text-decoration: none;
+}

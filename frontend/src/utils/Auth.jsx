@@ -1,4 +1,4 @@
-export const BaseUrl = "https://auth.nomoreparties.co";
+export const BaseUrl = 'http://localhost:3000';
 
 function checkResponse(response) {
   if (response.ok) {
@@ -35,7 +35,7 @@ export const tockenCheck = (jwt) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
+      "Authorization": `Bearer ${jwt}`,
     },
   }).then(checkResponse);
 };

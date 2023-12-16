@@ -38,7 +38,7 @@ const App = () => {
 
   //регистрация
   const handleRegister = ({ password, email }) => {
-    auth
+    return auth
       .register(password, email)
       .then(() => {
         setImagePopup(successImage);
@@ -54,9 +54,10 @@ const App = () => {
 
   //запрос на авторизацию
   const handleLogin = ({ password, email }) => {
-    auth
+    return auth
       .authorize(password, email)
       .then((response) => {
+        console.log(response)
         localStorage.setItem("jwt", response.token);
         setLoggedIn(true);
         setEmailLogin(email);
@@ -69,30 +70,27 @@ const App = () => {
       });
   };
 
+  useEffect(() => {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      auth.tockenCheck(jwt)
+        .then((res) => {
+            setEmailLogin(res.email);
+            setLoggedIn(true);
+            navigate("/", {replace: true});
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [navigate]);
+
   const onSignOut = () => {
     setLoggedIn(false);
     setEmailLogin(null);
     navigate("/sign-in', {replace: true}");
     localStorage.removeItem("jwt");
   };
-
-  useEffect(() => {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
-      auth
-        .tockenCheck(jwt)
-        .then((response) => {
-          if (response) {
-            setLoggedIn(true);
-            setEmailLogin(response.data.email);
-            navigate("/", { replace: true });
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, []);
 
   useEffect(() => {
     if (loggedIn) {
@@ -223,10 +221,6 @@ const App = () => {
     setIsDeletePopupOpen(true);
     setCardToDelete(cardId);
   };
-
-  // function handleCloseByOverlay (isItOverlay) {
-  //   isItOverlay && closeAllPopups();
-  // }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>

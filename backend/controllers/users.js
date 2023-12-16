@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const {
   BadRequestError,
   NotFoundError,
@@ -16,14 +18,14 @@ module.exports.login = (req, res, next) => {
       if (!user) {
         return next(new AuthorizationError('Такого пользователя не существует'));
       }
-      return bcrypt.compare(password, user.password)
+      return bcrypt.compare(String(password), user.password)
         .then((matched) => {
           if (!matched) {
             return next(new AuthorizationError('Неправильные почта или пароль'));
           }
 
-          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-          return res.send({ jwt: token });
+          const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key', { expiresIn: '7d' });
+          return res.send({ token });
         })
         .then(() => res.send({ message: 'Успешный вход' }))
         .catch(next);
@@ -37,9 +39,9 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserById = async (req, res, next) => {
+module.exports.getUserById = (req, res, next) => {
   try {
-    const user = await User.findById(req.params.userId);
+    const user = User.findById(req.params.userId);
     if (!user) {
       next(new NotFoundError('Пользователь не найден'));
       return;

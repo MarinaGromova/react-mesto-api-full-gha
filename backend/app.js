@@ -3,23 +3,32 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
 const helmet = require('helmet');
+const cors = require('cors');
 const routes = require('./routes/index');
 const handleError = require('./middlewares/handleError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-
-const { PORT = 3000 } = process.env;
+const { config } = require('./config');
 
 const app = express();
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1500,
 });
 
-app.use(helmet());
-
 mongoose
-  .connect('mongodb://127.0.0.1:27017/mestodb');
+  .connect(config.MONGO_URL);
+
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ],
+  credentials: true,
+  maxAge: 30,
+}));
+
+app.use(helmet());
 
 app.use(limiter);
 
@@ -35,4 +44,4 @@ app.use(errors());
 
 app.use(handleError);
 
-app.listen(PORT);
+app.listen(config.PORT);

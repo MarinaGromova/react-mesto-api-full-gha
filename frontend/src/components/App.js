@@ -53,15 +53,16 @@ const App = () => {
   };
 
   //запрос на авторизацию
-  const handleLogin = ({ password, email }) => {
+  async function handleLogin ({ password, email }) {
     return auth
       .authorize(password, email)
       .then((response) => {
-        console.log(response)
-        localStorage.setItem("jwt", response.token);
-        setLoggedIn(true);
-        setEmailLogin(email);
-        navigate("'/sign-in', {replace: true}");
+        if(response.token){
+          localStorage.setItem("token", response.token);
+          setLoggedIn(true);
+          setEmailLogin(email);
+          navigate("'/sign-in', {replace: true}");
+        }
       })
       .catch(() => {
         setImagePopup(errorImage);
@@ -71,9 +72,9 @@ const App = () => {
   };
 
   useEffect(() => {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
-      auth.tockenCheck(jwt)
+    const token = localStorage.getItem("token");
+    if (token) {
+      auth.tockenCheck(token)
         .then((res) => {
             setEmailLogin(res.email);
             setLoggedIn(true);
@@ -89,19 +90,8 @@ const App = () => {
     setLoggedIn(false);
     setEmailLogin(null);
     navigate("/sign-in', {replace: true}");
-    localStorage.removeItem("jwt");
+    localStorage.removeItem("token");
   };
-
-  useEffect(() => {
-    if (loggedIn) {
-      Promise.all([api.getUserInfo(), api.getInitialCards()])
-        .then(([user, cards]) => {
-          setCurrentUser(user);
-          setCards(cards);
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [loggedIn]);
 
   useEffect(() => {
     const closeByEscape = (e) => {
@@ -222,6 +212,18 @@ const App = () => {
     setCardToDelete(cardId);
   };
 
+  useEffect(() => {
+    if (loggedIn) {
+      api.setAuthorizationHeader(localStorage.getItem('token'));
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([user, cards]) => {
+          setCurrentUser(user);
+          setCards(cards);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [loggedIn]);
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="root">
@@ -256,8 +258,8 @@ const App = () => {
                     onClick={onSignOut}
                   />
                   <ProtectedRoute
-                    component={Main}
                     loggedIn={loggedIn}
+                    component={Main}
                     onEditAvatar={handleEditAvatarClick}
                     onEditProfile={handleEditProfileClick}
                     onAddPlace={handleAddPlaceClick}

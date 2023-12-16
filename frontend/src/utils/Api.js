@@ -6,6 +6,13 @@ class Api {
     this._headers = options.headers;
   }
 
+  setAuthorizationHeader(token) {
+    this._headers = {
+      ...this._headers,
+      authorization: `Bearer ${token}`,
+    };
+  }
+
   _checkResponse(res) {
     return res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);
   }

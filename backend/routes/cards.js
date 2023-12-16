@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
+const regexAvatar = /https?:\/\/(www\.)?[a-zA-Z\d-]+\.[\w\d\-.~:/?#[\]@!$&'()*+,;=]{2,}#?/;
+
 const {
   getCards,
   addCard,
@@ -15,7 +17,7 @@ router.post(
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30).required(),
-      link: Joi.string().min(2).max(900).required(),
+      link: Joi.string().pattern(regexAvatar).required(),
     }),
   }),
   addCard,

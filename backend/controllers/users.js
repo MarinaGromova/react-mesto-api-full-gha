@@ -39,9 +39,9 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserById = (req, res, next) => {
+module.exports.getUserById = async (req, res, next) => {
   try {
-    const user = User.findById(req.params.userId);
+    const user = await User.findById(req.params.userId);
     if (!user) {
       next(new NotFoundError('Пользователь не найден'));
       return;

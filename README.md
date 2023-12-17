@@ -9,7 +9,7 @@
 
 ## Ссылки на проект
 
-IP-адрес 51.250.67.113
+IP <51.250.67.113>
 
 Frontend https://shtrihh.students.nomoredomainsmonster.ru
 

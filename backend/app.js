@@ -46,4 +46,4 @@ app.use(errors());
 
 app.use(handleError);
 
-app.listen(config.PORT);
+app.listen(config.PORT || 3000);

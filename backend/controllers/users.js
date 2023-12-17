@@ -24,7 +24,7 @@ module.exports.login = (req, res, next) => {
             return next(new AuthorizationError('Неправильные почта или пароль'));
           }
 
-          const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key', { expiresIn: '7d' });
+          const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
           return res.send({ token });
         })
         .then(() => res.send({ message: 'Успешный вход' }))

@@ -24,6 +24,7 @@ app.use(cors({
     // 'http://localhost:3000',
     // 'http://localhost:3001',
     'https://api.shtrihh.students.nomoredomainsmonster.ru',
+    'http://api.shtrihh.students.nomoredomainsmonster.ru',
   ],
   credentials: true,
   maxAge: 30,

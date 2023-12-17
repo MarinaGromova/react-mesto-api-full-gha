@@ -5,5 +5,5 @@ const optionApi = {
     'Content-Type': 'application/json'
   }
 };
-console.log(optionApi)
+
 export {optionApi};

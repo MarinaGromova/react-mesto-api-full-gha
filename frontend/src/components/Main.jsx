@@ -36,7 +36,7 @@ const Main = (props) => {
           {props.cards.map((card) => (
             <li key={card._id} className="elements__card">
               <Card
-                card={card}
+                {...card}
                 onCardClick={props.onCardClick}
                 onCardLike={props.onCardLike}
                 onDeleteCard={props.onDeleteCard}

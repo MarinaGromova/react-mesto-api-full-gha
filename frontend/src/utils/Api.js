@@ -4,13 +4,7 @@ class Api {
   constructor(options) {
     this._baseUrl = options.baseUrl;
     this._headers = options.headers;
-  }
-
-  setAuthorizationHeader(token) {
-    this._headers = {
-      ...this._headers,
-      authorization: `Bearer ${token}`,
-    };
+    this._authorization = this._headers.authorization;
   }
 
   _checkResponse(res) {
@@ -25,7 +19,10 @@ class Api {
   getUserInfo() {
     return this._request(`${this._baseUrl}/users/me`, {
       method: "GET",
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
@@ -33,7 +30,10 @@ class Api {
   getInitialCards() {
     return this._request(`${this._baseUrl}/cards`, {
       method: "GET",
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
@@ -41,7 +41,10 @@ class Api {
   patchUserInfo(data) {
     return this._request(`${this._baseUrl}/users/me`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
       body: JSON.stringify({
         name: data.name,
         about: data.about,
@@ -50,11 +53,14 @@ class Api {
   }
 
   //добавление новой карточки
-  postAddCard({ name, link }) {
+  postAddCard(data) {
     return this._request(`${this._baseUrl}/cards`, {
       method: "POST",
-      headers: this._headers,
-      body: JSON.stringify({ name, link }),
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
+      body: JSON.stringify(data),
     });
   }
 
@@ -62,21 +68,30 @@ class Api {
   handleLike(cardId) {
     return this._request(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: "PUT",
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
   deleteLike(cardId) {
     return this._request(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
   deleteCard(cardId) {
     return this._request(`${this._baseUrl}/cards/${cardId}`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
     });
   }
 
@@ -84,7 +99,10 @@ class Api {
   patchAvatarUrl(avatar) {
     return this._request(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+      },
       body: JSON.stringify(avatar),
     });
   }

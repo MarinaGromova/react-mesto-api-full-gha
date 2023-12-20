@@ -53,14 +53,14 @@ const App = () => {
   };
 
   //запрос на авторизацию
-  async function handleLogin ({ password, email }) {
+  const handleLogin = ({ password, email }) => {
     return auth
       .authorize(password, email)
       .then((response) => {
         if(response.token){
-          localStorage.setItem("token", response.token);
-          setLoggedIn(true);
           setEmailLogin(email);
+          localStorage.setItem("jwt", response.token);
+          setLoggedIn(true);
           navigate("'/sign-in', {replace: true}");
         }
       })
@@ -72,12 +72,12 @@ const App = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("jwt");
     if (token) {
       auth.tockenCheck(token)
         .then((res) => {
-            setEmailLogin(res.email);
             setLoggedIn(true);
+            setEmailLogin(res.email);
             navigate("/", {replace: true});
         })
         .catch((error) => {
@@ -86,11 +86,34 @@ const App = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (loggedIn) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([user, cards]) => {
+          setCards(cards);
+          setCurrentUser(user);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [loggedIn]);
+
+  const handleAddPlaceSubmit = (data) => {
+    setrenderLoading(true);
+    api
+      .postAddCard(data)
+      .then((res) => {
+        setCards([res, ...cards]);
+        closeAllPopups();
+      })
+      .catch((err) => console.log(`Ошибка: ${err}`))
+      .finally(() => setrenderLoading(false));
+  };
+
   const onSignOut = () => {
+    localStorage.removeItem("jwt");
     setLoggedIn(false);
     setEmailLogin(null);
     navigate("/sign-in', {replace: true}");
-    localStorage.removeItem("token");
   };
 
   useEffect(() => {
@@ -129,21 +152,19 @@ const App = () => {
     setInfoTooltip(true);
   };
 
-  const handleCardDelete = (cardId) => {
-    api
-      .deleteCard(cardId)
-      .then(() => {
-        setCards(cards.filter((c) => c._id !== cardId));
+  const handleCardDelete = (card) => {
+    api.deleteCard(card._id)
+      .then((newCard) => {
+        setCards(cards.filter((c) => c._id === card._id ? "" : newCard));
       })
       .catch((err) => console.log(`Ошибка: ${err}`))
       .finally(() => setrenderLoading(false));
   };
 
   const handleCardLike = (card) => {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const isLiked = card.likes.some((id) => id === currentUser._id);
     if (!isLiked) {
-      api
-        .handleLike(card._id)
+      api.handleLike(card._id)
         .then((newCard) => {
           setCards((cards) =>
             cards.map((c) => (c._id === card._id ? newCard : c))
@@ -151,8 +172,7 @@ const App = () => {
         })
         .catch((err) => console.log(`Ошибка: ${err}`));
     } else {
-      api
-        .deleteLike(card._id)
+      api.deleteLike(card._id)
         .then((newCard) => {
           setCards((cards) =>
             cards.map((c) => (c._id === card._id ? newCard : c))
@@ -186,18 +206,6 @@ const App = () => {
       .finally(() => setrenderLoading(false));
   };
 
-  const handleAddPlaceSubmit = (data) => {
-    setrenderLoading(true);
-    api
-      .postAddCard(data)
-      .then((res) => {
-        setCards([res, ...cards]);
-        closeAllPopups();
-      })
-      .catch((err) => console.log(`Ошибка: ${err}`))
-      .finally(() => setrenderLoading(false));
-  };
-
   const closeAllPopups = () => {
     setEditAvatarPopupOpen(false);
     setEditProfilePopupOpen(false);
@@ -211,18 +219,6 @@ const App = () => {
     setIsDeletePopupOpen(true);
     setCardToDelete(cardId);
   };
-
-  useEffect(() => {
-    if (loggedIn) {
-      api.setAuthorizationHeader(localStorage.getItem('token'));
-      Promise.all([api.getUserInfo(), api.getInitialCards()])
-        .then(([user, cards]) => {
-          setCurrentUser(user);
-          setCards(cards);
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [loggedIn]);
 
   return (
     <CurrentUserContext.Provider value={currentUser}>

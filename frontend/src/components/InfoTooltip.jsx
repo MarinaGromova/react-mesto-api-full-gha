@@ -9,7 +9,7 @@ const InfoTooltip = (props) => {
           className="popup__container-close"
         >
         </button>
-        <img className="popup__container_image" src={props.image}/>
+        <img className="popup__container_image" src={props.image} alt=""/>
         <h2 className="popup__container_link">{props.title}</h2>
       </div>
     </div>

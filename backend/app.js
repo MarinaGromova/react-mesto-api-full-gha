@@ -34,11 +34,11 @@ app.use(cors({
 
 app.use(helmet());
 
-app.use(limiter);
-
 app.use(express.json());
 
 app.use(requestLogger);
+
+app.use(limiter);
 
 app.get('/crash-test', () => {
   setTimeout(() => {

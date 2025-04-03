@@ -1,6 +1,7 @@
 const optionApi = {
-  // baseUrl: 'http://localhost:3000',
-  baseUrl: 'https://api.shtrihh.students.nomoredomainsmonster.ru',
+  baseUrl: 'http://localhost:3000',
+  // baseUrl: 'https://api.movie.shtrihh.nomoredomainsmonster.ru'
+
   headers: {
     'Content-Type': 'application/json'
   }

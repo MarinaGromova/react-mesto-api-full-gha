@@ -1,5 +1,5 @@
-export const BaseUrl = 'https://api.shtrihh.students.nomoredomainsmonster.ru';
-// export const BaseUrl = 'http://localhost:3000';
+// export const BaseUrl = 'https://api.shtrihh.students.nomoredomainsmonster.ru';
+export const BaseUrl = 'http://localhost:3000';
 
 function checkResponse(response) {
   if (response.ok) {
